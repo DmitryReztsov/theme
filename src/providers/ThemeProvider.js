@@ -10,22 +10,23 @@ const defineTheme = () => {
   // берем тему из хранилища браузера, если она есть в списке - возвращаем ее
   const theme = window?.localStorage?.getItem('theme');
   if (Object.values(themes).includes(theme)) return theme;
-
   // с помощью метода matchMedia определяем, какая из тем сейчас задана в браузере пользователя
-  return window.matchMedia('(prefers-color-scheme: light)')
+  const media = window.matchMedia('(prefers-color-scheme: light)');
+  return media.matches
     ? themes.light
     : themes.dark
 }
 
 // создаем контекст, с помощью которого будем передавать состояние вниз по дереву компонентов
-export const ThemeContext = createContext({theme: themes.light});
+export const ThemeContext = createContext({});
 
 const ThemeProvider = ({ children }) => {
   // с помощью хука будем хранить данные о текущей теме
-  const [ theme, setTheme ] = useState(defineTheme);
+  const [ theme, setTheme ] = useState(defineTheme());
 
   // при изменении темы устанавливаем тему в хранилище браузера и атрибут html-тэга
   useEffect(() => {
+    console.log(defineTheme())
     document.documentElement.dataset.theme = theme;
     localStorage.setItem('theme', theme);
   }, [theme]);
